@@ -7,7 +7,7 @@ You've been doing this long enough to know that to restore snow operations, you 
 
 Collect stars by solving puzzles. Two puzzles will be made available on each day in the Advent calendar; the second puzzle is unlocked when you complete the first. Each puzzle grants one star. Good luck!
 
-You try to ask why they can't just use a weather machine ("not powerful enough") and where they're even sending you ("the sky") and why your map looks mostly blank ("you sure ask a lot of questions") and hang on did you just say the sky ("of course, where do you think snow comes from") when you realize that the Elves are already loading you into a trebuchet ("please hold still, we need to strap you in").
+You try to ask why they can't just use a weather machine ("not powerful enough") and where they're even sending you ("the sky") and why your map looks mostly blank ("you sure ask a lot of questions") and hang on did you just say the sky ("of course, where do you think snow comes from") when you rfealize that the Elves are already loading you into a trebuchet ("please hold still, we need to strap you in").
 
 As they're making the final adjustments, they discover that their calibration document (your puzzle input) has been amended by a very young Elf who was apparently just excited to show off her art skills. Consequently, the Elves are having trouble reading the values on the document.
 
@@ -53,13 +53,43 @@ def read_file(file):
     line = file.readline()
     return line
 
-# Function to read a line and extract the digits 
-# Idea for part 2: use a match-case statement, or several if-elif statements to narrow down the possible number
+# Function to read a line and extract the digits
+# Solution to part 2 is very non-sophisticated, but will have to do 
 def extract_digits(line):
     temp_arr = []
     for i in range(0, len(line)):
         if line[i] in "0123456789":
-            temp_arr.append(i)
+            temp_arr.append(line[i])
+        else:
+            if line[i] == "o":
+                if line[i+1] == "n":
+                    if line[i+2] == "e":
+                        temp_arr.append("1")
+            elif line[i] == "t":
+                if line[i+1] == "w":
+                    temp_arr.append("2")
+                elif line[i+1] == "h":
+                    if line[i+2] == "r":
+                        if line[i+3] == "e":
+                            temp_arr.append("3")
+            elif line[i] == "f":
+                if line[i+1] == "o":
+                    if line[i+2] == "u":
+                        temp_arr.append("4")
+                if line[i+1] == "i":
+                    temp_arr.append("5")
+            elif line[i] == "s":
+                if line[i+1] == "i":
+                    temp_arr.append("6")
+                if line[i+1] == "e":
+                    if line[i+2] == "v":
+                        temp_arr.append("7")
+            elif line[i] == "e":
+                if line[i+1] == "i":
+                    temp_arr.append("8")
+            elif line[i] == "n":
+                if line[i+1] == "i":
+                    temp_arr.append("9")
             
     return temp_arr
 
