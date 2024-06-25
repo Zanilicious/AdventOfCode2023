@@ -37,14 +37,30 @@ result = 0
 # Function : Read a line / game, split into sets --> Return: Sets
 def line_to_sets(file):
     line = file.readline()
-    sets = re.split(': |; ', line)
-    sets.pop(0)
+    str_sets = re.split(': |; ', line)
+    str_sets.pop(0)
 
-    return sets
+    return str_sets
+
+# Function : Convert sets of strings into sets of ints
+def str_sets_to_int_sets(str_sets):
+    int_sets = []*len(str_sets)
+    for i in range(0, len(str_sets)):
+        print(len(str_sets[i].split(",")))
+        #int_sets[i] = 
+
+    return int_sets
 
 # Function : Split sets into color fields --> Return: Color fields
+def sets_to_fields(sets):
+
+
+    return fields
 
 # Function : Determine if each color field is possible --> Return: Bool
 
 # Main
-print(line_to_sets(file))
+str_sets = line_to_sets(file)
+print(str_sets)
+int_sets = str_sets_to_int_sets(str_sets)
+print(int_sets)
