@@ -25,6 +25,11 @@ In the example above, games 1, 2, and 5 would have been possible if the bag had 
 Determine which games would have been possible if the bag had been loaded with only 12 red cubes, 13 green cubes, and 14 blue cubes. What is the sum of the IDs of those games?
 """
 
+# Open file 
+#   --> Read a game's results
+#       --> Split game results into sets
+#            --> ???
+
 # Imports
 import re # Used in regex splitting 
 
@@ -34,7 +39,7 @@ file = open("input", "r")
 # Var : Result
 result = 0
 
-# Function : Read a line / game, split into sets --> Return: Sets
+# Function : Read a line, split into sets --> Return: Sets
 def line_to_sets(file):
     line = file.readline()
     str_sets = re.split(': |; ', line)
@@ -42,25 +47,12 @@ def line_to_sets(file):
 
     return str_sets
 
-# Function : Convert sets of strings into sets of ints
-def str_sets_to_int_sets(str_sets):
-    int_sets = []*len(str_sets)
-    for i in range(0, len(str_sets)):
-        print(len(str_sets[i].split(",")))
-        #int_sets[i] = 
+# Function : Sort a set into red-green-blue order --> Return: Sets 
 
-    return int_sets
+# Function : Extract amount per set --> Return: Amount 
 
-# Function : Split sets into color fields --> Return: Color fields
-def sets_to_fields(sets):
+# Function : Check if the amounts are correct --> Return: Bool
 
-
-    return fields
-
-# Function : Determine if each color field is possible --> Return: Bool
+# Function : Go through all games and  
 
 # Main
-str_sets = line_to_sets(file)
-print(str_sets)
-int_sets = str_sets_to_int_sets(str_sets)
-print(int_sets)
