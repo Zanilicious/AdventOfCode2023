@@ -25,55 +25,108 @@ In the example above, games 1, 2, and 5 would have been possible if the bag had 
 Determine which games would have been possible if the bag had been loaded with only 12 red cubes, 13 green cubes, and 14 blue cubes. What is the sum of the IDs of those games?
 """
 
+"""
+--- Part Two ---
+The Elf says they've stopped producing snow because they aren't getting any water! He isn't sure why the water stopped; however, he can show you how to get to the water source to check it out for yourself. It's just up ahead!
+
+As you continue your walk, the Elf poses a second question: in each game you played, what is the fewest number of cubes of each color that could have been in the bag to make the game possible?
+
+Again consider the example games from earlier:
+
+Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
+Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
+Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
+In game 1, the game could have been played with as few as 4 red, 2 green, and 6 blue cubes. If any color had even one fewer cube, the game would have been impossible.
+Game 2 could have been played with a minimum of 1 red, 3 green, and 4 blue cubes.
+Game 3 must have been played with at least 20 red, 13 green, and 6 blue cubes.
+Game 4 required at least 14 red, 3 green, and 15 blue cubes.
+Game 5 needed no fewer than 6 red, 3 green, and 2 blue cubes in the bag.
+The power of a set of cubes is equal to the numbers of red, green, and blue cubes multiplied together. The power of the minimum set of cubes in game 1 is 48. In games 2-5 it was 12, 1560, 630, and 36, respectively. Adding up these five powers produces the sum 2286.
+
+For each game, find the minimum set of cubes that must have been present. What is the sum of the power of these sets?
+"""
 # FUNCTIONS REQUIRED
 # Open file
 # Read a line
-# Separate line into sets (array)
-# Convert array of sets into a dict/set and store in array
+# Format line into array
 # Determine if a set is possible, return bool
 # Add ID of possible game to sum
+#
+# PART TWO
+# extension : Determine fewest amount of dies per color (extend possible_dies())
+# Function : Calculate power of a set of cubes
+# Function : Add all powers together
 
 # Imports
 import re # Used in regex splitting 
 
-# Load the input file
-file = open("input", "r")
-
-# Var : Sum of all "possible" game IDs
-sum = 0
-
-# Var : Current game ID
-id = 0
-
-# Function : Read a line, split into sets, split into subsets, return array
+# Function : Read a line, store contents in array, return array
 def line_to_sets(file):
-    # Read a line, split into sets, remove the first array entry (game #)
     line = file.readline()
-    sets = re.split(': |; ', line)
+    sets = re.split(': |; |, ', line)
     sets.pop(0)
-
-    # Split sets into subsets
-    for i in range(0, len(sets)):
-        sets[i] = sets[i].split(", ")
 
     return sets
 
-# Function : Convert array of sets into dicts
-def sets_to_dicts(sets):
-    dict_array = []
-    # Problem not nesting the arrays properly, but on good track
-    for set in sets:
-        for subset in set:
-            dice = subset.split(" ")
-            dict_array.append({dice[1] : dice[0]})
+# Function : Pop one entry at a time, check if possible amount of dies, return bool
+# extension : determine fewest amount of dies per color
+def possible_dies(sets):
+    possible = True
+    fewest_colors = []
 
-    return dict_array
+    while(sets != []):
+        # CURRENT ISSUE IS HERE
+        colors = {"red" : 10000, "green" : 10000, "blue" : 10000}
+        dice = sets.pop().split(" ")
+        
+        try:
+            amount = int(dice[0])
+        except:
+            print("exception possible_dies")
+        
+        if "red" in dice[1]:
+            colors["red"] = min(colors["red"], amount)
+            if amount > 12: possible &= False
+        elif "green" in dice[1]:
+            colors["green"] = min(colors["green"], amount)
+            if amount > 13: possible &= False
+        elif "blue" in dice[1]:
+            colors["blue"] = min(colors["blue"], amount)
+            if amount > 14: possible &= False
+        else:
+            print("Error in possible_dies")
+        
+        fewest_colors.append(colors)
 
-# Function : Determine if a set is possible
+    return possible, fewest_colors
 
 
 # Main
-sets = line_to_sets(file)
-print(sets)
-dict_array = sets_to_dicts(sets)
-print(dict_array)
+def main():
+    # Load the input file
+    file = open("input", "r")
+
+    # Var : Sum of all "possible" game IDs
+    sum = 0
+
+    # Var : Current game ID
+    id = 0
+    
+    # Read a line, use as loop-condition
+    sets = line_to_sets(file)
+    while (sets != []):
+        # Each line, inc the game id
+        id += 1
+        # If latest game was possible, add game id to sum
+        possible, fewest_colors = possible_dies(sets)
+        if possible: sum += id
+        print(fewest_colors)
+
+        # Read the next line / game
+        sets = line_to_sets(file)
+
+    print("The sum of all game IDs with possible games is:", sum)
+
+main()
