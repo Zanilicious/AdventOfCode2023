@@ -25,10 +25,13 @@ In the example above, games 1, 2, and 5 would have been possible if the bag had 
 Determine which games would have been possible if the bag had been loaded with only 12 red cubes, 13 green cubes, and 14 blue cubes. What is the sum of the IDs of those games?
 """
 
-# Open file 
-#   --> Read a game's results
-#       --> Split game results into sets
-#            --> ???
+# FUNCTIONS REQUIRED
+# Open file
+# Read a line
+# Separate line into sets (array)
+# Convert array of sets into a dict/set and store in array
+# Determine if a set is possible, return bool
+# Add ID of possible game to sum
 
 # Imports
 import re # Used in regex splitting 
@@ -36,23 +39,41 @@ import re # Used in regex splitting
 # Load the input file
 file = open("input", "r")
 
-# Var : Result
-result = 0
+# Var : Sum of all "possible" game IDs
+sum = 0
 
-# Function : Read a line, split into sets --> Return: Sets
+# Var : Current game ID
+id = 0
+
+# Function : Read a line, split into sets, split into subsets, return array
 def line_to_sets(file):
+    # Read a line, split into sets, remove the first array entry (game #)
     line = file.readline()
-    str_sets = re.split(': |; ', line)
-    str_sets.pop(0)
+    sets = re.split(': |; ', line)
+    sets.pop(0)
 
-    return str_sets
+    # Split sets into subsets
+    for i in range(0, len(sets)):
+        sets[i] = sets[i].split(", ")
 
-# Function : Sort a set into red-green-blue order --> Return: Sets 
+    return sets
 
-# Function : Extract amount per set --> Return: Amount 
+# Function : Convert array of sets into dicts
+def sets_to_dicts(sets):
+    dict_array = []
+    # Problem not nesting the arrays properly, but on good track
+    for set in sets:
+        for subset in set:
+            dice = subset.split(" ")
+            dict_array.append({dice[1] : dice[0]})
 
-# Function : Check if the amounts are correct --> Return: Bool
+    return dict_array
 
-# Function : Go through all games and  
+# Function : Determine if a set is possible
+
 
 # Main
+sets = line_to_sets(file)
+print(sets)
+dict_array = sets_to_dicts(sets)
+print(dict_array)
