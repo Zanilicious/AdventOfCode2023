@@ -42,3 +42,77 @@ Of course, the actual engine schematic is much larger. What is the sum of all of
 # Second pass, for each encountered number, peek around it in all directions to see if symbol has been stored
 # If found, add number to global array
 # At the end of a run, sum all numbers in global array
+
+# FUNCTIONS
+# Open and read file
+# Load 3 lines at a time
+# Store all symbols' positions of current 3 lines
+# Check if number has symbol around it, store if true
+
+# Imports
+
+# Functions
+# Load the file
+def load_file(filename):
+    f = open(filename, "r")
+
+    return f
+
+# Close the file
+def close_file(file):
+    file.close()
+
+# Load three lines into array
+def load_lines(file):
+    lines = []
+
+    for i in range(0, 3):
+        line = file.readline()
+        # Remove \n at end of line
+        if "\n" in line:
+            line = line[0:-1]
+        lines.append(line)
+
+    return lines
+
+# Store all symbols' positions in latest three lines in a 2D-array
+def store_sym_pos(lines):
+    positions = [[],
+                 [],
+                 []]
+    
+    for line_count, line in enumerate(lines):
+        for char_count, char in enumerate(line):
+            if char not in ".0123456789":
+                positions[0][line_count].append(char_count)
+
+
+    return positions
+
+
+# Main
+def main():
+    # Var : Sum of all numbers (w/ symbol close to it)
+    sum = 0
+
+    # Load file
+    file = load_file("input")
+
+    # Load three lines 
+    # Eventually insert into a while-loop
+    lines = load_lines(file)
+
+    # Store positions of symbols for last three lines into 2D-array
+    # positions = store_sym_pos(lines)
+
+    # print(positions)
+    
+
+
+
+    # Close file prior to program termination
+    close_file(file)
+
+main()
+
+    
