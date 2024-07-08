@@ -55,12 +55,14 @@ For each game, find the minimum set of cubes that must have been present. What i
 # Add ID of possible game to sum
 #
 # PART TWO
-# extension : Determine fewest amount of dies per color (extend possible_dies())
+# extension : Determine fewest amount of dies per color
+# Function : 
 # Function : Calculate power of a set of cubes
 # Function : Add all powers together
 
 # Imports
 import re # Used in regex splitting 
+from copy import deepcopy # Used in deep copying variable
 
 # Function : Read a line, store contents in array, return array
 def line_to_sets(file):
@@ -71,14 +73,10 @@ def line_to_sets(file):
     return sets
 
 # Function : Pop one entry at a time, check if possible amount of dies, return bool
-# extension : determine fewest amount of dies per color
 def possible_dies(sets):
     possible = True
-    fewest_colors = []
 
     while(sets != []):
-        # CURRENT ISSUE IS HERE
-        colors = {"red" : 10000, "green" : 10000, "blue" : 10000}
         dice = sets.pop().split(" ")
         
         try:
@@ -87,20 +85,47 @@ def possible_dies(sets):
             print("exception possible_dies")
         
         if "red" in dice[1]:
-            colors["red"] = min(colors["red"], amount)
             if amount > 12: possible &= False
         elif "green" in dice[1]:
-            colors["green"] = min(colors["green"], amount)
             if amount > 13: possible &= False
         elif "blue" in dice[1]:
-            colors["blue"] = min(colors["blue"], amount)
             if amount > 14: possible &= False
         else:
             print("Error in possible_dies")
-        
-        fewest_colors.append(colors)
 
-    return possible, fewest_colors
+    return possible
+
+# Function : Determine min. amount of colors needed for the specific game to work
+# Can be fused into possible_dies() but enables improved readibility being its own function
+def determine_colors(color_sets):
+    colors = {"red":0, "green":0, "blue":0}
+
+    while(color_sets != []):
+        color = color_sets.pop().split(" ")
+
+        try:
+            amount = int(color[0])
+        except:
+            print("exception possible_dies")
+
+        
+        if "red" in color[1]:
+            colors["red"] = max(colors["red"], amount)
+        elif "green" in color[1]:
+            colors["green"] = max(colors["green"], amount)
+        elif "blue" in color[1]:
+            colors["blue"] = max(colors["blue"], amount)
+        else:
+            print("Error in possible_dies")
+    
+    return colors
+
+# Function : Calculate the powers of all colors
+def pwr_colors(colors):
+    pwr = colors["red"]*colors["green"]*colors["blue"]
+
+    return pwr
+
 
 
 # Main
@@ -113,20 +138,33 @@ def main():
 
     # Var : Current game ID
     id = 0
+
+    # Var : Sum of powers
+    sum_pwrs = 0
     
     # Read a line, use as loop-condition
     sets = line_to_sets(file)
+    color_sets = deepcopy(sets)
     while (sets != []):
         # Each line, inc the game id
         id += 1
         # If latest game was possible, add game id to sum
-        possible, fewest_colors = possible_dies(sets)
+        possible = possible_dies(sets)
         if possible: sum += id
-        print(fewest_colors)
+
+        # Return the smallest amount of colors needed for each game to work
+        colors = determine_colors(color_sets)
+
+        # Calculate powers of colors
+        pwr = pwr_colors(colors)
+
+        sum_pwrs += pwr
 
         # Read the next line / game
         sets = line_to_sets(file)
+        color_sets = deepcopy(sets)
 
     print("The sum of all game IDs with possible games is:", sum)
+    print("The sum of all powers is:", sum_pwrs)
 
 main()
