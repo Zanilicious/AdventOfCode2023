@@ -45,9 +45,10 @@ Of course, the actual engine schematic is much larger. What is the sum of all of
 
 # FUNCTIONS
 # Open and read file
+# Close file
 # Load 3 lines at a time
 # Store all symbols' positions of current 3 lines
-# Check if number has symbol around it, store if true
+# Check if number has symbol around it, sum number into global var if true
 
 # Imports
 
@@ -84,10 +85,11 @@ def store_sym_pos(lines):
     for line_count, line in enumerate(lines):
         for char_count, char in enumerate(line):
             if char not in ".0123456789":
-                positions[0][line_count].append(char_count)
+                positions[line_count].append(char_count)
 
 
     return positions
+
 
 
 # Main
@@ -103,9 +105,7 @@ def main():
     lines = load_lines(file)
 
     # Store positions of symbols for last three lines into 2D-array
-    # positions = store_sym_pos(lines)
-
-    # print(positions)
+    positions = store_sym_pos(lines)
     
 
 
@@ -113,6 +113,14 @@ def main():
     # Close file prior to program termination
     close_file(file)
 
-main()
+file = load_file("input")
+lines = load_lines(file)
+#for i in lines:
+#    print(i)
 
-    
+positions = store_sym_pos(lines)
+#print(positions)
+#for j in positions[1]:
+#    print(lines[1][j])
+
+close_file(file)
