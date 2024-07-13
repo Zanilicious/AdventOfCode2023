@@ -35,6 +35,7 @@ Of course, the actual engine schematic is much larger. What is the sum of all of
 # Symbols can be treated as anything != periods | numbers
 
 # Exactly 140 characters per line (+1 \n for all but last line)
+# 140 lines
 
 # Method : Scanning 3 lines at a time
 # Possible to check in all directions
@@ -50,9 +51,9 @@ Of course, the actual engine schematic is much larger. What is the sum of all of
 # Store all symbols' positions of current 3 lines
 # Check if number has symbol around it, sum number into global var if true
 
-# Imports
+# IMPORTS
 
-# Functions
+# FUNCTION 
 # Load the file
 def load_file(filename):
     f = open(filename, "r")
@@ -63,36 +64,42 @@ def load_file(filename):
 def close_file(file):
     file.close()
 
-# Load three lines into array
+# Load all lines from input file into array
 def load_lines(file):
     lines = []
 
-    for i in range(0, 3):
-        line = file.readline()
+    line = file.readline()
+    while (line != ""):
         # Remove \n at end of line
         if "\n" in line:
             line = line[0:-1]
         lines.append(line)
 
+        line = file.readline()
+
     return lines
 
-# Store all symbols' positions in latest three lines in a 2D-array
+# Store all symbols' and numbers' positions in a 2D-array
 def store_sym_pos(lines):
-    positions = [[],
-                 [],
-                 []]
+    sym_positions = [[]]*len(lines)
+    num_positions = [[]]*len(lines)
     
     for line_count, line in enumerate(lines):
         for char_count, char in enumerate(line):
             if char not in ".0123456789":
-                positions[line_count].append(char_count)
+                sym_positions[line_count].append(char_count)
+            
+
+    return sym_positions
+
+# Store all numbers' positions in a 2D-array
+def store_num_pos(lines):
+    num_positions = [[]]*len(lines)
+    for line_count, line in enumerate(lines)
 
 
-    return positions
 
-
-
-# Main
+# MAIN
 def main():
     # Var : Sum of all numbers (w/ symbol close to it)
     sum = 0
@@ -100,27 +107,24 @@ def main():
     # Load file
     file = load_file("input")
 
-    # Load three lines 
+    # Load all lines
     # Eventually insert into a while-loop
     lines = load_lines(file)
+
+    # Close file following loading of lines
+    close_file(file)
 
     # Store positions of symbols for last three lines into 2D-array
     positions = store_sym_pos(lines)
     
-
-
-
-    # Close file prior to program termination
-    close_file(file)
+# TEST BED
 
 file = load_file("input")
 lines = load_lines(file)
-#for i in lines:
-#    print(i)
 
-positions = store_sym_pos(lines)
-#print(positions)
-#for j in positions[1]:
-#    print(lines[1][j])
+sym_positions = store_sym_pos(lines)
+#print(sym_positions)
+
+print(len(sym_positions))
 
 close_file(file)
