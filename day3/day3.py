@@ -79,23 +79,22 @@ def load_lines(file):
 
     return lines
 
-# Store all symbols' and numbers' positions in a 2D-array
-def store_sym_pos(lines):
-    sym_positions = [[]]*len(lines)
-    num_positions = [[]]*len(lines)
-    
+# Store all symbols' positions in a 2D array
+# Inner array tells which line the symbol was found on, the value in the inner array tells which position the symbol was on
+def return_symbol_pos(lines):
+    # List comprehension
+    # Using multiplication "[[]] * 10" will result in 10 inner lists that are the same object - incorrect for our situation!
+    symbol_pos = [[] for _ in range(0, len(lines))]
+
+    # If the element in a line is a symbol, add the position of that element to the inner list whose position correspond to the line position
     for line_count, line in enumerate(lines):
         for char_count, char in enumerate(line):
             if char not in ".0123456789":
-                sym_positions[line_count].append(char_count)
-            
+                symbol_pos[line_count].append(char_count)
 
-    return sym_positions
+    return symbol_pos
 
-# Store all numbers' positions in a 2D-array
-def store_num_pos(lines):
-    num_positions = [[]]*len(lines)
-    for line_count, line in enumerate(lines)
+
 
 
 
@@ -122,9 +121,9 @@ def main():
 file = load_file("input")
 lines = load_lines(file)
 
-sym_positions = store_sym_pos(lines)
-#print(sym_positions)
+symbol_pos = return_symbol_pos(lines)
 
-print(len(sym_positions))
+
+
 
 close_file(file)
