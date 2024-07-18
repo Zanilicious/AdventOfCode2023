@@ -94,9 +94,56 @@ def return_symbol_pos(lines):
 
     return symbol_pos
 
+# Helper function reads and returns the number when encountering a digit during scanning of line
+def read_num(line, char_count):
+    digits = ""
 
+    # Go through all digits in sequence and combine them
+    while (line[char_count] in "0123456789"):
+        digits = digits + line[char_count]
+        if char_count < 139:
+            char_count += 1
+        else:
+            break
 
+    # Convert the num from str to int
+    try:
+        num = int(digits)
+    except:
+        "read_num() incorrect input"
 
+    return num
+
+# Store all numbers' positions
+# Level 1 array, element correspond to line position
+# Dict / line, key corresponds to initial char position, val corresponds to number
+def return_number_pos(lines):
+    # Level-1 array
+    number_pos = []
+    # Used to not add redundant digits when encountering them once
+    recent_num = 0
+
+    # On digit encounter, add number to dict
+    # On newline, append dict to array
+    # Process all lines in this manner
+    for line_count, line in enumerate(lines):
+        dictionary = {}
+        recent_num = 0
+
+        for char_count, char in enumerate(line):
+            if char in "0123456789" and recent_num <= 0:
+                num = read_num(line, char_count)
+                dictionary[char_count] = num
+                # The length of the number is the amount of digits the function will skip
+                recent_num = len(str(num))
+            recent_num -= 1
+        # Once a line is read, the dict is filled with all num from that line and thus added to the L1 array
+        number_pos.append(dictionary)
+
+    return number_pos
+
+# 
+def 
 
 # MAIN
 def main():
@@ -118,11 +165,15 @@ def main():
     
 # TEST BED
 
+# Load the file, load all lines into array
 file = load_file("input")
 lines = load_lines(file)
 
+# Get position for all symbols into 2D array
 symbol_pos = return_symbol_pos(lines)
 
+# Get position of all numbers in array containing dictionaries for each line
+number_pos = return_number_pos(lines)
 
 
 
