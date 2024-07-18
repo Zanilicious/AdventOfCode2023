@@ -142,8 +142,43 @@ def return_number_pos(lines):
 
     return number_pos
 
-# 
-def 
+# Helper function, takes dict key and val
+# Returns array with all indices to look for symbol
+# Return all the indices which should be searched for symbols
+# All indices searched in upper and lower lines, only edge indices searched in the same line
+def get_search_indices(key, num):
+    search_indices = []
+
+    # Len of num
+    num_len = len(str(num))
+
+    # Starting index at one step "left" of value
+    if key > 0:
+        key -= 1
+    
+    for i in range(key, key+num_len+2):
+        search_indices.append(i)
+
+    return search_indices
+
+#
+def get_part_number(dictionary, key, line_index, symbol_pos):
+    part_number = 0
+
+    number = dictionary[key]
+    search_indices = get_search_indices(key, number)
+
+    if line_index == 0:
+        if (symbol_pos[line_index][search_indices[0]] or
+            symbol_pos[line_index][search_indices[-1]] or
+             
+              not in ".0123456789"):
+
+    
+    elif line_index == 139:
+
+    else:
+
 
 # MAIN
 def main():
@@ -160,9 +195,21 @@ def main():
     # Close file following loading of lines
     close_file(file)
 
-    # Store positions of symbols for last three lines into 2D-array
-    positions = store_sym_pos(lines)
-    
+    # Get position for all symbols into 2D array
+    symbol_pos = return_symbol_pos(lines)
+
+    # Get position of all numbers in array containing dictionaries for each line
+    number_pos = return_number_pos(lines)
+
+    # Go through all numbers and add to sum if it's a part number
+    for line_index, dictionary in enumerate(number_pos):
+        for key in dictionary:
+            part_number = get_part_number(dictionary, key, line_index, symbol_pos)
+            sum += part_number
+
+
+
+        
 # TEST BED
 
 # Load the file, load all lines into array
@@ -175,6 +222,5 @@ symbol_pos = return_symbol_pos(lines)
 # Get position of all numbers in array containing dictionaries for each line
 number_pos = return_number_pos(lines)
 
-
-
+# Always close file!
 close_file(file)
