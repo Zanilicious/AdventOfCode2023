@@ -161,24 +161,35 @@ def get_search_indices(key, num):
 
     return search_indices
 
-#
+# Finds if a number is a "part number"
+# Returns 0 if not, otherwise returns the number
 def get_part_number(dictionary, key, line_index, symbol_pos):
     part_number = 0
 
     number = dictionary[key]
+    # Returns all the indices +1 in each direction, which the number covers
     search_indices = get_search_indices(key, number)
 
+    # If it's the first line, only check edges of line_index and all indices of line below
     if line_index == 0:
         if (symbol_pos[line_index][search_indices[0]] or
-            symbol_pos[line_index][search_indices[-1]] or
-             
-              not in ".0123456789"):
+            symbol_pos[line_index][search_indices[-1]]
+            not in ".0123456789"):
+            part_number = number
+        else:
+            for index in search_indices:
+                if symbol_pos[line_index+1][index] not in ".0123456789":
+                    part_number = number
+        
 
-    
-    elif line_index == 139:
 
-    else:
+    # If it's the last line, only check edges of line_index and all indices of line above
+    #elif line_index == 139:
 
+    # Otherwise, check all indices in lines above and below as well as edges of line_index
+    #else:
+
+    return part_number
 
 # MAIN
 def main():
@@ -212,6 +223,8 @@ def main():
         
 # TEST BED
 
+sum = 0
+
 # Load the file, load all lines into array
 file = load_file("input")
 lines = load_lines(file)
@@ -221,6 +234,15 @@ symbol_pos = return_symbol_pos(lines)
 
 # Get position of all numbers in array containing dictionaries for each line
 number_pos = return_number_pos(lines)
+
+# Go through all numbers and add to sum if it's a part number
+for line_index, dictionary in enumerate(number_pos):
+    for key in dictionary:
+        part_number = get_part_number(dictionary, key, line_index, symbol_pos)
+        sum += part_number
+
+print(sum)
+
 
 # Always close file!
 close_file(file)
