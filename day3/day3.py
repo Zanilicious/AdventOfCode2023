@@ -172,22 +172,26 @@ def get_part_number(dictionary, key, line_index, symbol_pos):
 
     # If it's the first line, only check edges of line_index and all indices of line below
     if line_index == 0:
-        if (symbol_pos[line_index][search_indices[0]] or
-            symbol_pos[line_index][search_indices[-1]]
-            not in ".0123456789"):
-            part_number = number
-        else:
-            for index in search_indices:
-                if symbol_pos[line_index+1][index] not in ".0123456789":
-                    part_number = number
+        print("0")
+        for index in search_indices:
+            if index in (symbol_pos[line_index] or symbol_pos[line_index+1]):
+                part_number = number
         
 
 
     # If it's the last line, only check edges of line_index and all indices of line above
-    #elif line_index == 139:
+    elif line_index == 139:
+        print("139")
+        for index in search_indices:
+            if index in (symbol_pos[line_index-1] or symbol_pos[line_index]):
+                part_number = number
 
     # Otherwise, check all indices in lines above and below as well as edges of line_index
-    #else:
+    else:
+        print("else")
+        for index in search_indices:
+            if index in (symbol_pos[line_index-1] or symbol_pos[line_index] or symbol_pos[line_index+1]):
+                part_number = number
 
     return part_number
 
@@ -217,32 +221,8 @@ def main():
         for key in dictionary:
             part_number = get_part_number(dictionary, key, line_index, symbol_pos)
             sum += part_number
+    
+    print("The sum of all part numbers is:", sum)
 
 
-
-        
-# TEST BED
-
-sum = 0
-
-# Load the file, load all lines into array
-file = load_file("input")
-lines = load_lines(file)
-
-# Get position for all symbols into 2D array
-symbol_pos = return_symbol_pos(lines)
-
-# Get position of all numbers in array containing dictionaries for each line
-number_pos = return_number_pos(lines)
-
-# Go through all numbers and add to sum if it's a part number
-for line_index, dictionary in enumerate(number_pos):
-    for key in dictionary:
-        part_number = get_part_number(dictionary, key, line_index, symbol_pos)
-        sum += part_number
-
-print(sum)
-
-
-# Always close file!
-close_file(file)
+main()
