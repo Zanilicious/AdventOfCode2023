@@ -152,12 +152,17 @@ def get_search_indices(key, num):
     # Len of num
     num_len = len(str(num))
 
+    temp_key = key
     # Starting index at one step "left" of value
     if key > 0:
-        key -= 1
+        temp_key -= 1
     
-    for i in range(key, key+num_len+2):
-        search_indices.append(i)
+    if key > 0:
+        for i in range(temp_key, temp_key+num_len+2):
+            search_indices.append(i)
+    else:
+        for i in range(temp_key, temp_key+num_len+1):
+            search_indices.append(i)
 
     return search_indices
 
@@ -172,25 +177,20 @@ def get_part_number(dictionary, key, line_index, symbol_pos):
 
     # If it's the first line, only check edges of line_index and all indices of line below
     if line_index == 0:
-        print("0")
         for index in search_indices:
             if index in (symbol_pos[line_index] or symbol_pos[line_index+1]):
                 part_number = number
         
-
-
     # If it's the last line, only check edges of line_index and all indices of line above
-    elif line_index == 139:
-        print("139")
+    elif line_index == len(symbol_pos)-1:
         for index in search_indices:
             if index in (symbol_pos[line_index-1] or symbol_pos[line_index]):
                 part_number = number
 
     # Otherwise, check all indices in lines above and below as well as edges of line_index
     else:
-        print("else")
         for index in search_indices:
-            if index in (symbol_pos[line_index-1] or symbol_pos[line_index] or symbol_pos[line_index+1]):
+            if index in symbol_pos[line_index-1] or index in symbol_pos[line_index] or index in symbol_pos[line_index+1]:
                 part_number = number
 
     return part_number
@@ -226,3 +226,5 @@ def main():
 
 
 main()
+
+# Answer input_5: 16073
