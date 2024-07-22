@@ -27,6 +27,33 @@ Here is an example engine schematic:
 In this schematic, two numbers are not part numbers because they are not adjacent to a symbol: 114 (top right) and 58 (middle right). Every other number is adjacent to a symbol and so is a part number; their sum is 4361.
 
 Of course, the actual engine schematic is much larger. What is the sum of all of the part numbers in the engine schematic?
+
+--- Part Two ---
+The engineer finds the missing part and installs it in the engine! As the engine springs to life, you jump in the closest gondola, finally ready to ascend to the water source.
+
+You don't seem to be going very fast, though. Maybe something is still wrong? Fortunately, the gondola has a phone labeled "help", so you pick it up and the engineer answers.
+
+Before you can explain the situation, she suggests that you look out the window. There stands the engineer, holding a phone in one hand and waving with the other. You're going so slowly that you haven't even left the station. You exit the gondola.
+
+The missing part wasn't the only issue - one of the gears in the engine is wrong. A gear is any * symbol that is adjacent to exactly two part numbers. Its gear ratio is the result of multiplying those two numbers together.
+
+This time, you need to find the gear ratio of every gear and add them all up so that the engineer can figure out which gear needs to be replaced.
+
+Consider the same engine schematic again:
+
+467..114..
+...*......
+..35..633.
+......#...
+617*......
+.....+.58.
+..592.....
+......755.
+...$.*....
+.664.598..
+In this schematic, there are two gears. The first is in the top left; it has part numbers 467 and 35, so its gear ratio is 16345. The second gear is in the lower right; its gear ratio is 451490. (The * adjacent to 617 is not a gear because it is only adjacent to one part number.) Adding up all of the gear ratios produces 467835.
+
+What is the sum of all of the gear ratios in your engine schematic?
 """
 
 # Need to figure out numbers exactly 1 d.u. (distance unit) away from a symbol
@@ -51,9 +78,10 @@ Of course, the actual engine schematic is much larger. What is the sum of all of
 # Store all symbols' positions of current 3 lines
 # Check if number has symbol around it, sum number into global var if true
 
-# IMPORTS
+# DEFINITIONS
+GEAR = "*"
 
-# FUNCTION 
+# FUNCTIONS
 # Load the file
 def load_file(filename):
     f = open(filename, "r")
@@ -168,8 +196,14 @@ def get_search_indices(key, num):
 
 # Finds if a number is a "part number"
 # Returns 0 if not, otherwise returns the number
-def get_part_number(dictionary, key, line_index, symbol_pos):
+# pt2: Everytime a part_number is found, it is checked if it is a gear
+# If true, then the "gear's" position ("line:index") is added as a key to a dictionary
+# The current number is added as a value
+# If a new number is found connected to the gear, it will check if the dict contains a part number for the given key, if true then the numbers are mult and added to a global sum
+def get_part_number(dictionary, key, line_index, symbol_pos, lines):
     part_number = 0
+    gear_dict = {}
+    gear_ratios = 0
 
     number = dictionary[key]
     # Returns all the indices +1 in each direction, which the number covers
@@ -180,25 +214,63 @@ def get_part_number(dictionary, key, line_index, symbol_pos):
         for index in search_indices:
             if index in (symbol_pos[line_index] or symbol_pos[line_index+1]):
                 part_number = number
+                # Adding the gear to the gear dict
+                if lines[line_index][index] == GEAR:
+                    key = str(line_index) + ":" + str(index)
+                elif lines[line_index+1][index] == GEAR:
+                    key = str(line_index+1) + ":" + str(index)
+
+                # If true, then there already is a value in the dict
+                if key in gear_dict.keys():
+                    gear_ratios += number * gear_dict[key]
+                else:
+                    gear_dict[key] = number
         
     # If it's the last line, only check edges of line_index and all indices of line above
     elif line_index == len(symbol_pos)-1:
         for index in search_indices:
             if index in (symbol_pos[line_index-1] or symbol_pos[line_index]):
                 part_number = number
+                # Adding the gear to the gear dict
+                if lines[line_index][index] == GEAR:
+                    key = str(line_index) + ":" + str(index)
+                elif lines[line_index-1][index] == GEAR:
+                    key = str(line_index+1) + ":" + str(index)
+
+                # If true, then there already is a value in the dict
+                if key in gear_dict.keys():
+                    gear_ratios += number * gear_dict[key]
+                else:
+                    gear_dict[key] = number
 
     # Otherwise, check all indices in lines above and below as well as edges of line_index
     else:
         for index in search_indices:
             if index in symbol_pos[line_index-1] or index in symbol_pos[line_index] or index in symbol_pos[line_index+1]:
                 part_number = number
+                # Adding the gear to the gear dict
+                if lines[line_index][index] == GEAR:
+                    key = str(line_index) + ":" + str(index)
+                elif lines[line_index+1][index] == GEAR:
+                    key = str(line_index+1) + ":" + str(index)
+                elif lines[line_index-1][index] == GEAR:
+                    key = str(line_index+1) + ":" + str(index)
 
-    return part_number
+                # If true, then there already is a value in the dict
+                if key in gear_dict.keys():
+                    gear_ratios += number * gear_dict[key]
+                else:
+                    gear_dict[key] = number
+
+    return part_number, gear_ratios
 
 # MAIN
 def main():
     # Var : Sum of all numbers (w/ symbol close to it)
     sum = 0
+
+    # Var : Sum of all gear ratios
+    gear_ratio_sum = 0
 
     # Load file
     file = load_file("input")
@@ -219,10 +291,12 @@ def main():
     # Go through all numbers and add to sum if it's a part number
     for line_index, dictionary in enumerate(number_pos):
         for key in dictionary:
-            part_number = get_part_number(dictionary, key, line_index, symbol_pos)
+            part_number, gear_ratios = get_part_number(dictionary, key, line_index, symbol_pos, lines)
             sum += part_number
+            gear_ratio_sum += gear_ratios
     
     print("The sum of all part numbers is:", sum)
+    print("The sum of all gear ratios is:", gear_ratio_sum)
 
 
 main()
