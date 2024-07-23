@@ -200,9 +200,8 @@ def get_search_indices(key, num):
 # If true, then the "gear's" position ("line:index") is added as a key to a dictionary
 # The current number is added as a value
 # If a new number is found connected to the gear, it will check if the dict contains a part number for the given key, if true then the numbers are mult and added to a global sum
-def get_part_number(dictionary, key, line_index, symbol_pos, lines):
+def get_part_number(dictionary, key, line_index, symbol_pos, lines, gear_dict):
     part_number = 0
-    gear_dict = {}
     gear_ratios = 0
 
     number = dictionary[key]
@@ -220,6 +219,9 @@ def get_part_number(dictionary, key, line_index, symbol_pos, lines):
                 elif lines[line_index+1][index] == GEAR:
                     key = str(line_index+1) + ":" + str(index)
 
+                print(key)
+
+
                 # If true, then there already is a value in the dict
                 if key in gear_dict.keys():
                     gear_ratios += number * gear_dict[key]
@@ -235,7 +237,10 @@ def get_part_number(dictionary, key, line_index, symbol_pos, lines):
                 if lines[line_index][index] == GEAR:
                     key = str(line_index) + ":" + str(index)
                 elif lines[line_index-1][index] == GEAR:
-                    key = str(line_index+1) + ":" + str(index)
+                    key = str(line_index-1) + ":" + str(index)
+
+                print(key)
+
 
                 # If true, then there already is a value in the dict
                 if key in gear_dict.keys():
@@ -254,7 +259,9 @@ def get_part_number(dictionary, key, line_index, symbol_pos, lines):
                 elif lines[line_index+1][index] == GEAR:
                     key = str(line_index+1) + ":" + str(index)
                 elif lines[line_index-1][index] == GEAR:
-                    key = str(line_index+1) + ":" + str(index)
+                    key = str(line_index-1) + ":" + str(index)
+                
+                print(key)
 
                 # If true, then there already is a value in the dict
                 if key in gear_dict.keys():
@@ -262,7 +269,7 @@ def get_part_number(dictionary, key, line_index, symbol_pos, lines):
                 else:
                     gear_dict[key] = number
 
-    return part_number, gear_ratios
+    return part_number, gear_ratios, gear_dict
 
 # MAIN
 def main():
@@ -288,10 +295,12 @@ def main():
     # Get position of all numbers in array containing dictionaries for each line
     number_pos = return_number_pos(lines)
 
+    gear_dict = {}
+
     # Go through all numbers and add to sum if it's a part number
     for line_index, dictionary in enumerate(number_pos):
         for key in dictionary:
-            part_number, gear_ratios = get_part_number(dictionary, key, line_index, symbol_pos, lines)
+            part_number, gear_ratios, gear_dict = get_part_number(dictionary, key, line_index, symbol_pos, lines, gear_dict)
             sum += part_number
             gear_ratio_sum += gear_ratios
     
