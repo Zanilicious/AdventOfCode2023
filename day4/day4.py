@@ -68,9 +68,15 @@ Process all of the original and copied scratchcards until no more scratchcards a
 # Add each card sum to a global sum
 # Print sum
 
+# METHOD PART 2
+# First pass calculates score for all unique cards, store in list
+# One list with all cards, iteratively increment all cards following using score-list
+
 # IMPORTS
 # Helps in splitting process
 import re
+# Helps in copying dict
+import copy
 
 # DEFINITIONS
 
@@ -170,10 +176,54 @@ def calc_score(dictionary):
 def total_score(dict_list):
     total_score = 0
 
-    for i in dict_list:
-        total_score += calc_score(i)
+    for dict in dict_list:
+        total_score += calc_score(dict)
 
     return total_score
+
+
+# Consider only finding the "score" for each unique card, then multiplying with an array of amount of cards
+# For each entry, it will automatically multiply the next amounts as well
+
+
+# Creates the list which contains the amount of cards for each ID
+# Initially only one card per ID
+# Element position + 1 == card ID
+# Returns list
+def create_card_list(dict_list):
+    card_list = []
+
+    for _ in dict_list:
+        card_list.append(1)
+
+    return card_list
+
+
+# Create a list with every card's scores
+# Returns list
+def create_score_list(dict_list):
+    score_list = []
+
+    for dict in dict_list:
+        score = calc_score(dict)
+        score_list.append(score)
+
+    return score_list
+
+# TOUGH
+# Adds copies to cards below current card, based on the score
+# Returns card_list
+def recalc_cards(card_list, score_list):
+    for index in range(len(card_list)):
+        if score_list[index] > (len(card_list) - index):
+            for inc in range(index + 1, len(card_list)):
+                card_list[inc] += 1
+        else:
+            for inc in range(index + 1, score_list[index]):
+                card_list[inc] += 1
+
+    return card_list
+
 
 
 # MAIN
@@ -188,6 +238,19 @@ def main():
     
     score = total_score(dict_list)
 
-    print("The total score for part 1 is:", score)
+    print("Score (pt1):", score)
+
+    card_list = create_card_list(dict_list)
+
+    score_list = create_score_list(dict_list)
+
+    card_list = recalc_cards(card_list, score_list)
+
+    print(card_list)
+
+
+
+
+
 
 main()
