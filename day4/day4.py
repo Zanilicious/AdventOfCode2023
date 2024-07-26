@@ -185,6 +185,16 @@ def total_score(dict_list):
 # Consider only finding the "score" for each unique card, then multiplying with an array of amount of cards
 # For each entry, it will automatically multiply the next amounts as well
 
+# Calculate score based on formula from part 2
+def new_calc_score(dictionary):
+    score = 0
+
+    for i in dictionary["my_numbers"]:
+        if i in dictionary["winning_numbers"]:
+            score += 1
+    
+    return score
+
 
 # Creates the list which contains the amount of cards for each ID
 # Initially only one card per ID
@@ -205,24 +215,37 @@ def create_score_list(dict_list):
     score_list = []
 
     for dict in dict_list:
-        score = calc_score(dict)
+        score = new_calc_score(dict)
         score_list.append(score)
 
     return score_list
 
-# TOUGH
-# Adds copies to cards below current card, based on the score
-# Returns card_list
-def recalc_cards(card_list, score_list):
-    for index in range(len(card_list)):
-        if score_list[index] > (len(card_list) - index):
-            for inc in range(index + 1, len(card_list)):
-                card_list[inc] += 1
-        else:
-            for inc in range(index + 1, score_list[index]):
-                card_list[inc] += 1
-
+# Helper function
+# Increments each card by score
+def increment_cards(ID, score, card_list):
+    for _ in range(card_list[ID-1]):
+        for index in range(ID, ID + score):
+            if index < len(card_list):
+                card_list[index] += 1
+    
     return card_list
+
+# Calculates the amount of cards given the score list
+def calculate_cards(score_list, card_list):
+    for element, score in enumerate(score_list):
+        ID = element + 1
+
+        card_list = increment_cards(ID, score, card_list)
+    
+    return card_list
+
+# Calculates the total amount of cards in the entire pile
+def calc_pile_amount(card_list):
+    sum = 0
+    for i in card_list:
+        sum += i
+    
+    return sum
 
 
 
@@ -238,15 +261,29 @@ def main():
     
     score = total_score(dict_list)
 
+    print("--- PART 1 ---")
+
     print("Score (pt1):", score)
+
+    print("--- PART 2 ---")
 
     card_list = create_card_list(dict_list)
 
     score_list = create_score_list(dict_list)
 
-    card_list = recalc_cards(card_list, score_list)
+    print("Initial amount of cards per ID:", card_list, "\n")
 
-    print(card_list)
+    print("Score per ID:", score_list, "\n")
+
+    card_list = calculate_cards(score_list, card_list)
+
+    print("Calculated amount of cards per ID:", card_list, "\n")
+
+    pile_amount = calc_pile_amount(card_list)
+
+    print("Total amount of cards in pile:", pile_amount, "\n")
+
+
 
 
 
