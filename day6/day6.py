@@ -38,13 +38,31 @@ In the third race, you could hold the button for at least 11 milliseconds and no
 
 To see how much margin of error you have, determine the number of ways you can beat the record in each race; in this example, if you multiply these values together, you get 288 (4 * 8 * 9).
 
-Determine the number of ways you could beat the record in each race. What do you get if you multiply these numbers together?"""
+Determine the number of ways you could beat the record in each race. What do you get if you multiply these numbers together?
+
+--- Part Two ---
+As the race is about to start, you realize the piece of paper with race times and record distances you got earlier actually just has very bad kerning. There's really only one race - ignore the spaces between the numbers on each line.
+
+So, the example from before:
+
+Time:      7  15   30
+Distance:  9  40  200
+...now instead means this:
+
+Time:      71530
+Distance:  940200
+Now, you have to figure out how many ways there are to win this single race. In this example, the race lasts for 71530 milliseconds and the record distance you need to beat is 940200 millimeters. You could hold the button anywhere from 14 to 71516 milliseconds and beat the record, a total of 71503 ways!
+
+How many ways can you beat the record in this one much longer race?"""
 
 # METHODOLOGY
 # Read all lines
 # Parse lines into lists, one for time and one for distance
 # Calculate distance a boat can travel given various charging times, with race record as upper bound
 #   For charging times that give a traveled distance > record, store charging time in list
+# PART 2
+# Just manipulate input and make a single race
+# Numbers seem large, if it doesn't work on first run there's another strategy where, instead of finding all options, you just find the upper and lower boundaries (since distance should be exponentially scaling)
 
 # Functions should be generalized, not specific to four races (as input shows)
 #   Allows for example input to be used
@@ -157,5 +175,21 @@ def main():
         total_winning_options *= winning_options
 
     print("The product of all winning options is:", total_winning_options)
+
+    total_winning_options_pt2 = 0
+
+    # Read the file and save the lines
+    lines = read_lines("input_pt2")
+    
+    # Parse the lines into a list for the race times and one for the race records
+    race_times, records = parse_lines(lines)
+
+    # Go through all the races, find the winning options for each, multiply and add to the global var
+    for race_index in range(RACES):
+        winning_options = find_options(race_index, race_times, records)
+
+        total_winning_options_pt2 += winning_options
+
+    print("The amount of winning options for pt2 is:", total_winning_options_pt2)
 
 main()
