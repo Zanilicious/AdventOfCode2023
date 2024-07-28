@@ -71,7 +71,9 @@ How many ways can you beat the record in this one much longer race?"""
 import re
 
 # DEFINITIONS
-RACES = 4
+# RACES = 4 for input from pt1
+# RACES = 1 for input from pt2
+RACES = 1
 
 # FUNCTIONS
 # Read lines
