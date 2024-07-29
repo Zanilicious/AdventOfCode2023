@@ -91,6 +91,21 @@ FOUR_KIND = 4
 FULL_OR_THREE = 3
 TWO_OR_ONE_PAIR = 2
 HIGH_CARD = 1
+# Order to use for sorting cards
+SORT_ORDER = {"A" : 0,
+              "K" : 1,
+              "Q" : 2,
+              "J" : 3,
+              "T" : 4,
+              "9" : 5,
+              "8" : 6,
+              "7" : 7,
+              "6" : 8,
+              "5" : 9,
+              "4" : 10,
+              "3" : 11,
+              "2" : 12,
+              }
 
 # FUNCTIONS
 # Helper: Parse line into list
@@ -183,7 +198,33 @@ def sort_on_type(games: list) -> list:
 # Compares the cards from two hands that are neighbours in the list to find if they need to be replaced
 # Input: list [[Hand, Bid, Type], [Hand, Bid, Type]...]
 # Returns: list [[Hand, Bid, Type], [Hand, Bid, Type]...]
+def sort_on_hand(games: list) -> list:
+    type_indices = []
+    cur_type = 0
 
+    # Gives indices for all new types
+    for game_index, game in enumerate(games):
+        if game[2] != cur_type: 
+            cur_type = game[2]
+            type_indices.append(game_index)
+    type_indices.append(len(games) - 1)
+    
+    # Sort part of the list
+    for index in range(len(type_indices)):
+        if index < len(games): 
+            temp_list = games[type_indices[index]:type_indices[index+1]]
+        
+            # Sort based on our custom sort order
+            temp_list.sort(key = lambda val: SORT_ORDER[val[1]])
+
+            games.append(temp_list)
+    
+    # Remove original set of games
+    for _ in range(type_indices[-1] + 1):
+        games.pop(0)
+
+    return games
+    
 
 # Create ranks-list
 # Creates a list of all the ranks, from 1 to len(hands-list)
@@ -212,6 +253,7 @@ def main():
 
     # Sort the games further based on their cards
     # Only sorts within the type domain
+    games = sort_on_hand(games)
 
 
 
