@@ -208,11 +208,14 @@ def sort_on_hand(games: list) -> list:
             cur_type = game[2]
             type_indices.append(game_index)
     type_indices.append(len(games) - 1)
+
+    print(type_indices)
     
     # Sort part of the list
     for index in range(len(type_indices)):
         if index < len(games): 
             temp_list = games[type_indices[index]:type_indices[index+1]]
+            print(temp_list)
         
             # Sort based on our custom sort order
             temp_list.sort(key = lambda val: SORT_ORDER[val[1]])
