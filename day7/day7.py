@@ -68,205 +68,159 @@ Find the rank of every hand in your set. What are the total winnings?
 # My input: 1000 lines
 
 # METHODOLOGY
-# Open file, load lines into list (1: Cards, 2: bid), close file
-# Assign type to every hand and put in list (3: Type)
-# First sorting: Sort all hands based on type
-# Second sorting: Sort all hands based on card strengths (Assume no hand duplicates)
-# Create list with all ranks
-# Create list with all winnings, using ranks-list and bids from hands-list
-# Print the sum of the winnings
+# 
 
 # DEFINITIONS
-# Ranks
-RANK_FIVE_KIND = 7
-RANK_FOUR_KIND = 6
-RANK_FULL_HOUSE = 5
-RANK_THREE_KIND = 4
-RANK_TWO_PAIR = 3
-RANK_ONE_PAIR = 2
-RANK_HIGH_CARD = 1
-# Card types
-FIVE_KIND = 5
-FOUR_KIND = 4
-FULL_OR_THREE = 3
-TWO_OR_ONE_PAIR = 2
-HIGH_CARD = 1
-# Order to use for sorting cards
-SORT_ORDER = {"A" : 0,
-              "K" : 1,
-              "Q" : 2,
-              "J" : 3,
-              "T" : 4,
-              "9" : 5,
-              "8" : 6,
-              "7" : 7,
-              "6" : 8,
-              "5" : 9,
-              "4" : 10,
-              "3" : 11,
-              "2" : 12,
-              }
+RANK_FIVE_OF_A_KIND = 1
+RANK_FOUR_OF_A_KIND = 2
+RANK_FULL_HOUSE = 3
+RANK_THREE_OF_A_KIND = 4
+RANK_TWO_PAIR = 5
+RANK_ONE_PAIR = 6
+RANK_HIGH_CARD = 7
+STRENGTH_ORDER = {"A": 0,
+                  "K": 1,
+                  "Q": 2,
+                  "J": 3,
+                  "T": 4,
+                  "9": 5,
+                  "8": 6,
+                  "7": 7,
+                  "6": 8,
+                  "5": 9,
+                  "4": 10,
+                  "3": 11,
+                  "2": 12
+                  } # Used for sorting based on cards
 
 # FUNCTIONS
-# Helper: Parse line into list
-# Input: str: line from file
-# Returns: list: [Hand, Bid]
+# Parse a line and return a list
+# Input: str
+# Output: list
 def parse_line(line):
-    game = []
+    # Split into hand and bid
+    line = line.split(" ")
 
-    game = line.split(" ")
+    # Remove newline char at end
+    if "\n" in line[1]:
+        line[1], _ = line[1].split("\n")
 
-    game[1] = int(game[1])
+    # Bid from str to int
+    line[1] = int(line[1])
 
-    return game
+    return line
 
-# File open, load hands-list, close file
-# Input: filename
-# Returns: list [[Hand, Bid], [Hand, Bid],...]
-def load_file(filename):
-    games = []
-
+# Read the file
+# Input: str
+# Output: list
+def read_file(filename):
     f = open(filename, "r")
+    lines = []
 
     line = f.readline()
     while line != "":
-        game = parse_line(line)
-        games.append(game)
+        line = parse_line(line)
+        lines.append(line)
         line = f.readline()
-
+    
     f.close()
 
-    return games
+    return lines
 
-# Helper: Finds the type of a hand 
-# Input: Str: Hand
-# Returns: Str: Type
-def find_type(hand: str) -> str:
-    max_amount = 0
+# Determines the type
+# Input: str
+# Output: int (Constant)
+def determine_type(hand):
+    count = 0
 
+    # Check the largest amount of same cards in the set
     for card in hand:
-        if (hand.count(card) > max_amount): max_amount = hand.count(card)
+        if hand.count(card) > count: count = hand.count(card)
     
-    if max_amount == HIGH_CARD:
-        hand_type = RANK_HIGH_CARD
-    elif max_amount == TWO_OR_ONE_PAIR:
-        hand_count = 0
+    if count == 0:
+        print("Error in determine_type(), count: 0")
+    elif count == 1:
+        return RANK_HIGH_CARD # All cards are unidentical
+    elif count == 2:
+        # Check how many pairs there are
+        pairs = 0
         for card in hand:
-            if hand.count(card) == 2: hand_count += 1
-            if hand_count == 2: hand_type = RANK_ONE_PAIR
-            elif hand_count == 4: hand_type = RANK_TWO_PAIR
-    elif max_amount == FULL_OR_THREE:
+            if hand.count(card) == 2: pairs += 0.5
+
+        if pairs == 1: return RANK_ONE_PAIR # Only one pair found
+        elif pairs == 2: return RANK_TWO_PAIR # Two pairs found
+    elif count == 3:
+        # Determine the last two cards
         for card in hand:
-            if hand.count(card) == 2:
-                hand_type = RANK_FULL_HOUSE
-                break
-            hand_type = RANK_THREE_KIND
-    elif max_amount == FOUR_KIND:
-        hand_type = RANK_FOUR_KIND
-    elif max_amount == FIVE_KIND:
-        hand_type = RANK_FIVE_KIND
+            if hand.count(card) == 2: return RANK_FULL_HOUSE # Last two cards are a pair
+        return RANK_THREE_OF_A_KIND # Last two cards are different 
+    elif count == 4:
+        return RANK_FOUR_OF_A_KIND # Four cards are matching
+    elif count == 5:
+        return RANK_FIVE_OF_A_KIND # All five cards are matching
     else:
-        print("Error in find_type()")
+        print("Error in determine_type(), count not in [0-5]")
 
-    return hand_type
+# Assigns the type to the hand
+# Input: list
+# Output: list
+def assign_type(game):
+    # Determine the type of the game
+    rank_type = determine_type(game[0])
 
-# Assigns type to hand
-# Uses helper function, appends the type from the return value to the list
-# Input: list [Hand, Bid]
-# Returns: list [Hand, Bid, Type]
-def assign_type(game: list) -> list:
-    hand_type = find_type(game[0])
-
-    game.append(hand_type)
+    # Append the rank to the 
+    game.append(rank_type)
 
     return game
 
-# Sort on type
-# Use the definitions of the types to sort all hands based on their types
-# Input: list [[Hand, Bid, Type], [Hand, Bid, Type]...]
-# Returns: list [[Hand, Bid, Type], [Hand, Bid, Type]...]
-def sort_on_type(games: list) -> list:
-    # Sorts the all the games using the type
-    games.sort(key = lambda x: x[2])
-
-    # Reverses the list to ensure FoaK first, HC last
-    games.reverse()
-
-    return games
-
-# Sort on hand
-# Compares the cards from two hands that are neighbours in the list to find if they need to be replaced
-# Input: list [[Hand, Bid, Type], [Hand, Bid, Type]...]
-# Returns: list [[Hand, Bid, Type], [Hand, Bid, Type]...]
-def sort_on_hand(games: list) -> list:
-    type_indices = []
-    cur_type = 0
-
-    # Gives indices for all new types
-    for game_index, game in enumerate(games):
-        if game[2] != cur_type: 
-            cur_type = game[2]
-            type_indices.append(game_index)
-    type_indices.append(len(games) - 1)
-
-    print(type_indices)
-    
-    # Sort part of the list
-    for index in range(len(type_indices)):
-        if index < len(games): 
-            temp_list = games[type_indices[index]:type_indices[index+1]]
-            print(temp_list)
-        
-            # Sort based on our custom sort order
-            temp_list.sort(key = lambda val: SORT_ORDER[val[1]])
-
-            games.append(temp_list)
-    
-    # Remove original set of games
-    for _ in range(type_indices[-1] + 1):
-        games.pop(0)
-
-    return games
-    
-
-# Create ranks-list
-# Creates a list of all the ranks, from 1 to len(hands-list)
-# Input: list [[Hand, Bid], [Hand, Bid]...]
-# Returns: list [len(hands-list), ..., 3, 2, 1]
-
-# Create winnings-list
-# Creates a list with the winnings from each hand
-# Requires the hands to be sorted
-# Input: list [[Hand, Bid, Type], [Hand, Bid, Type]...] , list [len(hands-list), ..., 3, 2, 1]
-# Returns: int: sum of winnings
-
-def main():
-    winnings_sum = 0
-
-    # Load the lines from input file
-    games = load_file("input")
-    
-    # Assign types to each game
-    # A game consists of the hand and the bid
-    for game in games:
+# Sort the cards, based on type
+# Input: list
+# Output: list
+def sort_cards_on_type(games):
+    # Append the type rank to the list
+    for index, game in enumerate(games):
         game = assign_type(game)
-    
-    # Sort the games based on their type
-    games = sort_on_type(games)
+        games[index] = game
 
-    # Sort the games further based on their cards
-    # Only sorts within the type domain
-    games = sort_on_hand(games)
+    # Sort the games based on the type rank
+    games = sorted(games, key = lambda x: x[2])
+
+    return games
+
+# Return shorter list of sorted games
+# Input: list
+# Output: list
+def custom_sort_cards(single_type: list) -> list:
+    sorted_single_type = sorted(single_type, key = lambda d: STRENGTH_ORDER[d[2]])
+
+    return sorted_single_type
+
+# Sort the cards, based on card strength
+# Input: list
+# Output: list
+def sort_cards_on_strength(games):
+    single_type = []
+    new_games = []
+
+    for game in games:
+        if (single_type == []): single_type.append(game) # First run for new type
+
+        if (game[2] == single_type[-1][2]): # If current game type matches previous game types
+            single_type.append(game)
+        else:
+            sorted_single_type = custom_sort_cards(single_type)
+            new_games.append(sorted_single_type)
+            single_type = []
+
+    return games
 
 
 
+lines = read_file("input")
 
+games = sort_cards_on_type(lines)
 
+single_type = games[1:96]
 
+sorted_single_type = custom_sort_cards(single_type)
 
-
-
-    
-    print("The sum of winnings from part 1 is:", winnings_sum)
-
-main()
